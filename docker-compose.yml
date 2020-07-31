@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  web:
+    image: nginx
+    build:
+      context: .
+      dockerfile: ./nginx/Dockerfile
+    depends_on:
+      - app
+    ports:
+      - "80:80"
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: mypassword
+    volumes:
+      - ./postgres:/var/lib/postgresql/data
+    ports:
+      - "5432"
+  app:
+    build: .
+    volumes:
+      - ./rails_app:/rails_app
+    depends_on:
+      - db
+    environment:
+      - RAILS_ENV=${RAILS_ENV}
+    # ports:
+    #   - 3000:3000 # Não tem necessidade por causa do nginx e o EXPOSE no Dockerfile
